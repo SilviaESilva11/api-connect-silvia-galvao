@@ -1,29 +1,41 @@
-from flask_sqlalchemy import SQLAlchemy
+# src/models/user_model.py
 
-db = SQLAlchemy()
-
-
-class User(db.Model):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-
-    def to_dict(self):
-        return {"id": self.id, "name": self.name, "email": self.email}
-
-
-def create_user(name, email):
-    user = User(name=name, email=email)
-    db.session.add(user)
-    db.session.commit()
-    return user
+users_db = []
+current_id = 1
 
 
 def get_all_users():
-    return User.query.all()
+    return users_db
 
 
 def get_user_by_id(user_id):
-    return User.query.get(user_id)
+    return next((u for u in users_db if u["id"] == user_id), None)
+
+
+def get_user_by_email(email):
+    return next((u for u in users_db if u["email"] == email), None)
+
+
+def create_user(name, email):
+    global current_id
+    user = {"id": current_id, "name": name, "email": email}
+    users_db.append(user)
+    current_id += 1
+    return user
+
+
+def update_user(user_id, name, email):
+    user = get_user_by_id(user_id)
+    if not user:
+        return None
+    user["name"] = name
+    user["email"] = email
+    return user
+
+
+def delete_user(user_id):
+    user = get_user_by_id(user_id)
+    if not user:
+        return False
+    users_db.remove(user)
+    return True

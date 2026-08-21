@@ -1,72 +1,143 @@
 import pytest
 from app import create_app
-from src.models.user_model import db
+from src.models.user_model import users_db
 
 
 @pytest.fixture
 def client():
-    """Cria uma instancia de teste do aplicativo Flask com banco em memoria."""
     app = create_app()
     app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-
     with app.test_client() as client:
         with app.app_context():
-            db.create_all()
-            yield client
-            db.drop_all()
+            users_db.clear()  # Limpa o banco em memória antes de cada teste
+        yield client
 
 
-def test_list_users(client):
-    """Testa a listagem geral de usuarios (200 OK)."""
+def test_list_users_empty(client):
     response = client.get("/users/")
     assert response.status_code == 200
-    assert response.json["status"] == "success"
+    assert response.get_json() == []
 
 
 def test_create_user_success(client):
-    """Testa a criacao de usuario via POST (201 Created)."""
-    payload = {"name": "Silvia", "email": "silvia@email.com"}
+    payload = {"name": "Silvia Galvao", "email": "silvia@email.com"}
     response = client.post("/users/", json=payload)
     assert response.status_code == 201
-    assert response.json["status"] == "success"
+    data = response.get_json()
+    assert data["name"] == "Silvia Galvao"
+    assert data["email"] == "silvia@email.com"
+
+
+def test_create_user_missing_fields(client):
+    response = client.post("/users/", json={"name": "Silvia"})
+    assert response.status_code == 400
+    assert "error" in response.get_json()
+
+
+def test_create_user_invalid_json(client):
+    response = client.post(
+        "/users/", data="invalid json", content_type="application/json"
+    )
+    assert response.status_code == 400
+
+
+def test_create_user_duplicate_email(client):
+    payload = {"name": "Silvia", "email": "silvia@email.com"}
+    client.post("/users/", json=payload)
+    response = client.post("/users/", json=payload)
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "E-mail já cadastrado"
 
 
 def test_get_user_by_id_success(client):
-    """Testa a busca de usuario existente por ID (200 OK)."""
-    create_resp = client.post(
-        "/users/", json={"name": "Ana", "email": "ana@email.com"}
+    res = client.post(
+        "/users/", json={"name": "Silvia", "email": "silvia@email.com"}
     )
-    user_id = create_resp.json["data"]["id"]
+    user_id = res.get_json()["id"]
 
     response = client.get(f"/users/{user_id}")
     assert response.status_code == 200
-    assert response.json["data"]["name"] == "Ana"
+    assert response.get_json()["name"] == "Silvia"
 
 
-def test_get_user_not_found(client):
-    """Testa a busca por ID inexistente (404 Not Found)."""
-    response = client.get("/users/999")
+def test_get_user_by_id_not_found(client):
+    response = client.get("/users/9999")
     assert response.status_code == 404
-    assert response.json["status"] == "error"
 
 
-def test_create_user_missing_email(client):
-    """Testa a criacao sem email via POST (400 Bad Request)."""
-    response = client.post("/users/", json={"name": "Sem Email"})
+def test_update_user_success(client):
+    res = client.post(
+        "/users/", json={"name": "Silvia", "email": "silvia@email.com"}
+    )
+    user_id = res.get_json()["id"]
+
+    payload = {"name": "Silvia Silva", "email": "silvia.novo@email.com"}
+    response = client.put(f"/users/{user_id}", json=payload)
+    assert response.status_code == 200
+    assert response.get_json()["name"] == "Silvia Silva"
+
+
+def test_update_user_not_found(client):
+    payload = {"name": "Nome", "email": "email@email.com"}
+    response = client.put("/users/9999", json=payload)
+    assert response.status_code == 404
+
+
+def test_update_user_invalid_json(client):
+    res = client.post(
+        "/users/", json={"name": "Silvia", "email": "silvia@email.com"}
+    )
+    user_id = res.get_json()["id"]
+    response = client.put(
+        f"/users/{user_id}",
+        data="invalid json",
+        content_type="application/json",
+    )
     assert response.status_code == 400
-    assert response.json["status"] == "error"
 
 
-def test_create_user_via_url_success(client):
-    """Testa a rota GET /create com parametros validos (201 Created)."""
-    response = client.get("/users/create?name=Carlos&email=carlos@email.com")
-    assert response.status_code == 201
-    assert response.json["status"] == "success"
-
-
-def test_create_user_via_url_missing_email(client):
-    """Testa a rota GET /create sem email na URL (400 Bad Request)."""
-    response = client.get("/users/create?name=Carlos")
+def test_update_user_missing_fields(client):
+    res = client.post(
+        "/users/", json={"name": "Silvia", "email": "silvia@email.com"}
+    )
+    user_id = res.get_json()["id"]
+    response = client.put(f"/users/{user_id}", json={"name": "Silvia"})
     assert response.status_code == 400
-    assert response.json["status"] == "error"
+
+
+def test_update_user_duplicate_email(client):
+    client.post("/users/", json={"name": "User 1", "email": "user1@email.com"})
+    res2 = client.post(
+        "/users/", json={"name": "User 2", "email": "user2@email.com"}
+    )
+    user2_id = res2.get_json()["id"]
+
+    # Tenta atualizar o User 2 usando o email do User 1
+    response = client.put(
+        f"/users/{user2_id}",
+        json={"name": "User 2 Modificado", "email": "user1@email.com"},
+    )
+    assert response.status_code == 400
+
+
+def test_delete_user_success(client):
+    res = client.post(
+        "/users/", json={"name": "Silvia", "email": "silvia@email.com"}
+    )
+    user_id = res.get_json()["id"]
+
+    response = client.delete(f"/users/{user_id}")
+    assert response.status_code == 200
+    assert response.get_json()["message"] == "Usuário removido com sucesso"
+
+
+def test_delete_user_not_found(client):
+    response = client.delete("/users/9999")
+    assert response.status_code == 404
+
+def test_update_user_model_not_found():
+    from src.models.user_model import update_user
+
+    result = update_user(9999, "Nome", "email@email.com")
+    assert result is None
+
