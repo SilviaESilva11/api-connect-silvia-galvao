@@ -1,5 +1,8 @@
-
 venv/
 .venv/
 .idea/
 __pycache__/
+*.pyc
+instance/
+.coverage
+.gitignore.py
