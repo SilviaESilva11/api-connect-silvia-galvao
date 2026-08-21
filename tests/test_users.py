@@ -5,54 +5,68 @@ from src.models.user_model import db
 
 @pytest.fixture
 def client():
-    app = create_app("sqlite:///:memory:")
+    """Cria uma instancia de teste do aplicativo Flask com banco em memoria."""
+    app = create_app()
     app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 
-    with app.app_context():
-        db.create_all()
-        yield app.test_client()
-        db.session.remove()
-        db.drop_all()
-        db.engine.dispose()
-
-
-# 1. Criação com sucesso (201 Created)
-def test_create_user_success(client):
-    payload = {"name": "Silvia Galvao", "email": "silvia@email.com"}
-    response = client.post("/users/", json=payload)
-    data = response.get_json()
-
-    assert response.status_code == 201
-    assert data["status"] == "success"
-    assert data["data"]["name"] == "Silvia Galvao"
+    with app.test_client() as client:
+        with app.app_context():
+            db.create_all()
+            yield client
+            db.drop_all()
 
 
-# 2. Falha na criação / Validação (400 Bad Request)
-def test_create_user_missing_email_failure(client):
-    payload = {"name": "Silvia Galvao"}  # Sem e-mail
-    response = client.post("/users/", json=payload)
-    data = response.get_json()
-
-    assert response.status_code == 400
-    assert data["status"] == "error"
-
-
-# 3. Listagem geral (200 OK)
-def test_list_users_success(client):
-    client.post(
-        "/users/", json={"name": "Silvia Galvao", "email": "silvia@email.com"}
-    )
+def test_list_users(client):
+    """Testa a listagem geral de usuarios (200 OK)."""
     response = client.get("/users/")
-    data = response.get_json()
-
     assert response.status_code == 200
-    assert data["status"] == "success"
+    assert response.json["status"] == "success"
 
 
-# 4. Falha na busca (404 Not Found)
-def test_get_user_not_found_failure(client):
-    response = client.get("/users/9999")
-    data = response.get_json()
+def test_create_user_success(client):
+    """Testa a criacao de usuario via POST (201 Created)."""
+    payload = {"name": "Silvia", "email": "silvia@email.com"}
+    response = client.post("/users/", json=payload)
+    assert response.status_code == 201
+    assert response.json["status"] == "success"
 
+
+def test_get_user_by_id_success(client):
+    """Testa a busca de usuario existente por ID (200 OK)."""
+    create_resp = client.post(
+        "/users/", json={"name": "Ana", "email": "ana@email.com"}
+    )
+    user_id = create_resp.json["data"]["id"]
+
+    response = client.get(f"/users/{user_id}")
+    assert response.status_code == 200
+    assert response.json["data"]["name"] == "Ana"
+
+
+def test_get_user_not_found(client):
+    """Testa a busca por ID inexistente (404 Not Found)."""
+    response = client.get("/users/999")
     assert response.status_code == 404
-    assert data["status"] == "error"
+    assert response.json["status"] == "error"
+
+
+def test_create_user_missing_email(client):
+    """Testa a criacao sem email via POST (400 Bad Request)."""
+    response = client.post("/users/", json={"name": "Sem Email"})
+    assert response.status_code == 400
+    assert response.json["status"] == "error"
+
+
+def test_create_user_via_url_success(client):
+    """Testa a rota GET /create com parametros validos (201 Created)."""
+    response = client.get("/users/create?name=Carlos&email=carlos@email.com")
+    assert response.status_code == 201
+    assert response.json["status"] == "success"
+
+
+def test_create_user_via_url_missing_email(client):
+    """Testa a rota GET /create sem email na URL (400 Bad Request)."""
+    response = client.get("/users/create?name=Carlos")
+    assert response.status_code == 400
+    assert response.json["status"] == "error"
