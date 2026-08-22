@@ -22,7 +22,6 @@ O objetivo desta API é fornecer uma interface leve, previsível e intuitiva par
 * Git instalado.
 
 ### 1. Clonar o Repositório
-
 ```bash
 git clone [https://github.com/SilviaESilva11/api-connect-silvia-galvao.git](https://github.com/SilviaESilva11/api-connect-silvia-galvao.git)
 cd api-connect-silvia-galvao
