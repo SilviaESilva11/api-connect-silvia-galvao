@@ -1,30 +1,23 @@
-# API Connect - Silvia Galvão
+# Meu Projeto Flask - API de Usuários
 
-API RESTful desenvolvida em Python com Flask para gerenciamento completo de usuários (CRUD), oferecendo rotas modulares via Blueprint, suporte a persistência com Flask-SQLAlchemy e validações estritas de integridade com respostas padronizadas em códigos HTTP.
+API RESTful para gerenciamento de usuários construída em Python utilizando o framework Flask, com persistência na camada de modelo e suíte de testes unitários automatizados com Pytest.
 
-## 🚀 Objetivo da API
-
-O objetivo desta API é fornecer uma interface leve, previsível e intuitiva para operações de CRUD de usuários, demonstrando a aplicação prática dos status HTTP (200 OK, 201 Created, 400 Bad Request e 404 Not Found) e validações essenciais no ciclo de vida dos dados (como verificação de e-mail único e dados obrigatórios).
+---
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Linguagem:** Python 3.10+
-* **Framework Web:** Flask
-* **ORM / Banco de Dados:** Flask-SQLAlchemy (SQLite)
-* **Testes Automáticos:** Pytest e Pytest-Cov
-* **IDE Recomendada:** PyCharm
+- **Python 3.14+**
+- **Flask** (Framework Web)
+- **Pytest** (Testes unitários)
+- **Pytest-Cov** (Análise de cobertura de testes)
 
-## ⚙️ Passo a Passo para Execução Local
+---
 
-### Pré-requisitos
+## 🚀 Como Executar o Projeto
 
-* Python 3.10 ou superior instalado.
-* Git instalado.
-
-### 1. Clonar o Repositório
-
+### 1. Clonar o repositório
 ```bash
-git clone https://github.com/SilviaESilva11/api-connect-silvia-galvao.git
-cd api-connect-silvia-galvao
+git clone [https://github.com/SEU_USUARIO/meu_projeto_flask.git](https://github.com/SEU_USUARIO/meu_projeto_flask.git)
+cd meu_projeto_flask
 
 
