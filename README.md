@@ -21,8 +21,16 @@ O objetivo desta API é fornecer uma interface leve, previsível e intuitiva par
 * Python 3.10 ou superior instalado.
 * Git instalado.
 
-### 1. Clonar o Repositório
+## 🧪 Executando os Testes
 
-```bash
-git clone [https://github.com/SilviaESilva11/api-connect-silvia-galvao.git](https://github.com/SilviaESilva11/api-connect-silvia-galvao.git)
-cd api-connect-silvia-galvao
+Para rodar os testes automatizados e verificar a cobertura de código:
+
+bash
+python -m pytest
+
+Para gerar o relatório de cobertura:
+
+bash
+python -m pytest --cov=app
+
+
