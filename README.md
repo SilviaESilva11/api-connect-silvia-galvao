@@ -17,7 +17,8 @@ API RESTful para gerenciamento de usuários construída em Python utilizando o f
 
 ### 1. Clonar o repositório
 ```bash
-git clone [https://github.com/SilviaESilva11/api-connect-silvia-galvao.git](https://github.com/SilviaESilva11/api-connect-silvia-galvao.git)
+git clone https://github.com/SilviaESilva11/api-connect-silvia-galvao.git
+
 cd api-connect-silvia-galvao
 
-
+python -m pytest --cov=srcgit add README.md
