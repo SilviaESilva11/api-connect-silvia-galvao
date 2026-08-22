@@ -1,27 +1,35 @@
-# API Connect - Silvia Galv√£o
+# API Connect - Silvia Galv„o
 
-API RESTful desenvolvida em Python com Flask para gerenciamento completo de usu√°rios (CRUD), oferecendo rotas modulares via Blueprint, suporte a persist√™ncia com Flask-SQLAlchemy e valida√ß√µes estritas de integridade com respostas padronizadas em c√≥digos HTTP.
+API RESTful desenvolvida em Python com Flask para gerenciamento completo de usu·rios (CRUD), oferecendo rotas modulares via Blueprint, suporte a persistÍncia com Flask-SQLAlchemy e validaÁıes estritas de integridade com respostas padronizadas em cÛdigos HTTP.
 
-## üöÄ Objetivo da API
+## ?? Objetivo da API
 
-O objetivo desta API √© fornecer uma interface leve, previs√≠vel e intuitiva para opera√ß√µes de CRUD de usu√°rios, demonstrando a aplica√ß√£o pr√°tica dos status HTTP (200 OK, 201 Created, 400 Bad Request e 404 Not Found) e valida√ß√µes essenciais no ciclo de vida dos dados (como verifica√ß√£o de e-mail √∫nico e dados obrigat√≥rios).
+O objetivo desta API È fornecer uma interface leve, previsÌvel e intuitiva para operaÁıes de CRUD de usu·rios, demonstrando a aplicaÁ„o pr·tica dos status HTTP (200 OK, 201 Created, 400 Bad Request e 404 Not Found) e validaÁıes essenciais no ciclo de vida dos dados (como verificaÁ„o de e-mail ˙nico e dados obrigatÛrios).
 
-## üõ†Ô∏è Tecnologias Utilizadas
+## ??? Tecnologias Utilizadas
 
 * **Linguagem:** Python 3.10+
 * **Framework Web:** Flask
 * **ORM / Banco de Dados:** Flask-SQLAlchemy (SQLite)
-* **Testes Autom√°ticos:** Pytest e Pytest-Cov
+* **Testes Autom·ticos:** Pytest e Pytest-Cov
 * **IDE Recomendada:** PyCharm
 
-## ‚öôÔ∏è Passo a Passo para Execu√ß√£o Local
+## ?? Passo a Passo para ExecuÁ„o Local
 
-### Pr√©-requisitos
+### PrÈ-requisitos
 
 * Python 3.10 ou superior instalado.
 * Git instalado.
 
-### 1. Clonar o Reposit√≥rio
+### 1. Clonar o RepositÛrio
+
 ```bash
-git clone [https://github.com/SilviaESilva11/api-connect-silvia-galvao.git](https://github.com/SilviaESilva11/api-connect-silvia-galvao.git)
+git clone https://github.com/SilviaESilva11/api-connect-silvia-galvao.git
 cd api-connect-silvia-galvao
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+pytest
+pytest --cov=app
+```
