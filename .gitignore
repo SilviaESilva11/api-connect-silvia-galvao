@@ -1,5 +1,13 @@
+# Configurações do PyCharm / IDEs
+.idea/
+.vscode/
+
+# Relatórios e cache de testes
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Ambientes virtuais e cache do Python
+venv/
 __pycache__/
 *.pyc
-venv/
-.pytest_cache/
-instance/
