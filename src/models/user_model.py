@@ -39,3 +39,4 @@ def delete_user(user_id):
         return False
     users_db.remove(user)
     return True
+
