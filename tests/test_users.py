@@ -9,7 +9,7 @@ def client():
   app.config["TESTING"] = True
   with app.test_client() as client:
     with app.app_context():
-      users_db.clear()  # Limpa o banco em memória antes de cada teste
+      users_db.clear()
     yield client
 
 
@@ -112,7 +112,6 @@ def test_update_user_duplicate_email(client):
   )
   user2_id = res2.get_json()["id"]
 
-  # Tenta atualizar o User 2 usando o email do User 1
   response = client.put(
       f"/users/{user2_id}",
       json={"name": "User 2 Modificado", "email": "user1@email.com"},
@@ -141,4 +140,3 @@ def test_update_user_model_not_found():
 
   result = update_user(9999, "Nome", "email@email.com")
   assert result is None
-
